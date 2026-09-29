@@ -1,94 +1,85 @@
 package app.main.controller;
 
-import app.main.dto.DeclaracaoResumoDTO;
-import app.main.service.DeclaracaoService;
+import app.main.service.*;
 import java.sql.Connection;
-import java.util.List;
 import java.util.Scanner;
 
 public class SimulacaoController {
 
     private DeclaracaoService declaracaoService;
+    private ContribuinteService contribuinteService;
+    private ImpostoPagoService impostoPagoService;
+    private RendimentoService rendimentoService;
+    private BemDireitoService bemdireitoService;
+    // private BemDireitoService bemDireitoService; // Para uso futuro se necessário
 
-    // Construtor que recebe a conexão do Main e repassa para o serviço principal
     public SimulacaoController(Connection connection) {
         this.declaracaoService = new DeclaracaoService(connection);
+        this.contribuinteService = new ContribuinteService(connection);
+        this.impostoPagoService = new ImpostoPagoService(connection);
+        this.rendimentoService = new RendimentoService(connection);
+        this.bemdireitoService = new BemDireitoService(connection);
     }
 
     public void iniciar(Scanner scanner) {
+        System.out.println("===================== Sistema IRPF 2026 =====================");
+        System.out.print("Inserir CPF: ");
+        String cpf = scanner.nextLine().trim();
+
+        // Validação básica (pode ser aprimorada depois)
+        if (cpf.isEmpty()) {
+            System.out.println("CPF inválido. A encerrar...");
+            return;
+        }
+
+        System.out.println("Validado.\n");
         int opcao = 0;
 
         do {
-            System.out.println("\n===================== Sistema IRPF 2026 =====================");
-            System.out.println("1. Consultar Simulação Completa da Declaração");
+            System.out.println("1. Contribuinte (dados pessoa)");
+            System.out.println("2. IRPF (Pagamento - 2026 pra trás)");
+            System.out.println("3. Tributaveis recebidos");
+            System.out.println("5. Relatório Completo");
             System.out.println("0. Sair");
-            System.out.println("=============================================================\n");
-
             System.out.print("Escolha uma opção: ");
 
             if (scanner.hasNextInt()) {
                 opcao = scanner.nextInt();
                 scanner.nextLine(); // limpar o buffer
 
-                if (opcao == 1) {
-                    processarConsulta(scanner);
-                } else if (opcao == 0) {
-                    System.out.println("Encerrando o sistema...");
-                } else {
-                    System.out.println("Opção inválida. Tente novamente.");
+                switch (opcao) {
+                    case 1 -> consultarContribuinte(cpf);
+                    case 2 -> consultarPagamentos(cpf);
+                    case 3 -> consultarTributaveis(cpf);
+                    case 5 -> declaracaoService.gerarRelatorio(cpf);
+                    case 0 -> System.out.println("A encerrar o sistema...");
+                    default -> System.out.println("Opção inválida.");
                 }
             } else {
-                System.out.println("Entrada inválida. Digite uma opção numérica.");
+                System.out.println("Entrada inválida.");
                 scanner.nextLine();
             }
-
+            System.out.println();
         } while (opcao != 0);
     }
 
-    private void processarConsulta(Scanner scanner) {
-        System.out.print("Informe os dígitos do CPF do contribuinte (ou aperte ENTER para listar todos): ");
-        String cpf = scanner.nextLine();
-
-        System.out.println("\n#############################################################");
-        System.out.print("Buscando dados...");
-        animarCarregamento();
-
-        System.out.println("\n");
-
-        System.out.println("--- Simulação Completa da Declaração ---");
-        // Busca os dados reais consolidados no banco
-        List<DeclaracaoResumoDTO> relatorio = declaracaoService.gerarRelatorioDeclaracoes();
-
-        boolean encontrou = false;
-        for (DeclaracaoResumoDTO dto : relatorio) {
-            // Filtra pelo CPF ou mostra todos se o usuário não digitou nada
-            if (cpf.trim().isEmpty() || dto.getCpf().equals(cpf)) {
-                System.out.println("Nome: " + dto.getNome());
-                System.out.println("CPF: " + dto.getCpf());
-                System.out.println("Rendimentos Tributáveis: R$ " + dto.getTotalRendimentos());
-                System.out.println("Imposto Pago Anteriormente: R$ " + dto.getTotalImpostoPago());
-                System.out.println("Bens e Direitos: " + dto.getDescricaoBens());
-                System.out.println("-------------------------------------------------------------");
-                encontrou = true;
-            }
-        }
-
-        if (!encontrou) {
-            System.out.println("Nenhum registro encontrado para o CPF informado.");
-        }
-
-        System.out.println("#############################################################\n");
+    private void consultarContribuinte(String cpf) {
+        System.out.println("--- Dados do Contribuinte ---");
+        // A IMPLEMENTAR: contribuinteService.buscarDadosCompletos(cpf);
     }
 
-    private void animarCarregamento() {
-        try {
-            for (int i = 0; i < 3; i++) {
-                Thread.sleep(400);
-                System.out.print(".");
-            }
-            System.out.println();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+    private void consultarPagamentos(String cpf) {
+        System.out.println("--- Pagamentos Anteriores a 2026 ---");
+        // A IMPLEMENTAR: impostoPagoService.buscarHistorico(cpf);
+    }
+
+    private void consultarTributaveis(String cpf) {
+        System.out.println("--- Rendimentos Tributáveis ---");
+        // A IMPLEMENTAR: rendimentoService.buscarTributaveis(cpf);
+    }
+
+    private void consultarRelatorioCompleto(String cpf) {
+        System.out.println("--- Relatório Completo da Declaração ---");
+        // A IMPLEMENTAR: declaracaoService.gerarRelatorio(cpf);
     }
 }

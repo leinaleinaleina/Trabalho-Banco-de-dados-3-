@@ -1,5 +1,32 @@
 package app.main.service;
 
+import app.main.dto.BemDireitoDTO;
+import app.main.repository.BemDireitoRepository;
+import java.sql.Connection;
+import java.util.List;
+
 public class BemDireitoService {
- //model BemDireito. para cobrir a consulta de bens e direitos (tipo, valor), permitindo demonstrar a evolução patrimonial de anos passados e ano atual
+
+    private BemDireitoRepository repository;
+
+    public BemDireitoService(Connection connection) {
+        this.repository = new BemDireitoRepository(connection);
+    }
+
+    public void listarPatrimonio(String cpf) {
+        List<BemDireitoDTO> bens = repository.buscarPatrimonio(cpf);
+
+        if (bens.isEmpty()) {
+            System.out.println("Nenhum bem ou direito encontrado para o CPF: " + cpf);
+            return;
+        }
+
+        System.out.println("--- Evolução de Bens e Direitos ---");
+        for (BemDireitoDTO bem : bens) {
+            System.out.println("Bem: " + bem.getDiscriminacao());
+            System.out.println("Valor em 2023: R$ " + (bem.getSituacao2023() != null ? bem.getSituacao2023() : "0.00"));
+            System.out.println("Valor em 2024: R$ " + (bem.getSituacao2024() != null ? bem.getSituacao2024() : "0.00"));
+            System.out.println("-----------------------------------");
+        }
+    }
 }
