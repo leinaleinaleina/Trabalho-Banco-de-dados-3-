@@ -1,6 +1,6 @@
 package programas.classes.generico;
 
-public class Email {
+public class EmailContribuinte {
     private String email;
     private int idEmail;
     
