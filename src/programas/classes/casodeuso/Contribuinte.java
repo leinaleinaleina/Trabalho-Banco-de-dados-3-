@@ -15,6 +15,8 @@ public class Contribuinte {
     private Email email;
     private Telefone telefone;
     private Nat_ocupacao natureza_ocupacao;
+    public int Numero;
+    public String Complemento;
 
     public Contribuinte () {
         this.endereco = new Endereco();
@@ -109,6 +111,22 @@ public class Contribuinte {
 
     public void setNatureza_ocupacao(Nat_ocupacao natureza_ocupacao) {
         this.natureza_ocupacao = natureza_ocupacao;
+    }
+
+    public int getNumero() {
+        return Numero;
+    }
+
+    public void setNumero(int Numero) {
+        this.Numero = Numero;
+    }
+
+    public String getComplemento() {
+        return Complemento;
+    }
+
+    public void setComplemento(String Complemento) {
+        this.Complemento = Complemento;
     }
 
 }
