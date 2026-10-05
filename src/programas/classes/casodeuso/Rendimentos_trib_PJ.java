@@ -16,8 +16,8 @@ public class Rendimentos_trib_PJ {
     private Declaracao_renda declaracao_renda;
 
     public Rendimentos_trib_PJ () {
-        this.fonte_pagadora = Fonte_pagadora ();
-        this.declaracao_renda = declaracao_renda ();
+        this.fonte_pagadora = new Fonte_pagadora();
+        this.declaracao_renda = new Declaracao_renda();
     }
 
     public int getIdRendimentos() {
