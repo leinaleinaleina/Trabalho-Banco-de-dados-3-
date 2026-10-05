@@ -5,6 +5,7 @@ public class Tipo_declaracao {
 
     public int idTipo_declaracao;
     public String Numero_declaracao;
+    public String Numero_passado;
 
     public int getIdTipo_declaracao() {
         return idTipo_declaracao;
@@ -20,5 +21,13 @@ public class Tipo_declaracao {
 
     public void setNumero_declaracao(String Numero_declaracao) {
         this.Numero_declaracao = Numero_declaracao;
+    }
+
+    public String getNumero_passado() {
+        return Numero_passado;
+    }
+
+    public void setNumero_passado(String Numero_passado) {
+        this.Numero_passado = Numero_passado;
     }
 }
