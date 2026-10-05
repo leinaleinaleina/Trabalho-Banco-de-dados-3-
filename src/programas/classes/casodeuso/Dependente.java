@@ -9,8 +9,8 @@ public class Dependente {
     public String Data_nascimento;
     public char Moradia_titular;
     public String Deducao;
-    private Telefone telefone;
-    private Email email;
+    private TelefoneDependente telefone;
+    private EmailDependente email;
     private Tipo_dependente tipo_dependente;
 
     public int getIdDependente() {
@@ -61,19 +61,19 @@ public class Dependente {
         this.Deducao = Deducao;
     }
 
-    public Telefone getTelefone() {
+    public TelefoneDependente getTelefone() {
         return telefone;
     }
 
-    public void setTelefone(Telefone telefone) {
+    public void setTelefone(TelefoneDependente telefone) {
         this.telefone = telefone;
     }
 
-    public Email getEmail() {
+    public EmailDependente getEmail() {
         return email;
     }
 
-    public void setEmail(Email email) {
+    public void setEmail(EmailDependente email) {
         this.email = email;
     }
 

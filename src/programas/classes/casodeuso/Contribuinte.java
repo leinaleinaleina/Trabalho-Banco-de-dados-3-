@@ -12,16 +12,16 @@ public class Contribuinte {
     public char companheiro;
     public char residente;
     private Endereco endereco;
-    private Email email;
-    private Telefone telefone;
+    private EmailContribuinte email;
+    private TelefoneContribuinte telefone;
     private Nat_ocupacao natureza_ocupacao;
     public int Numero;
     public String Complemento;
 
     public Contribuinte () {
         this.endereco = new Endereco();
-        this.email = new Email();
-        this.telefone = new Telefone();
+        this.email = new EmailContribuinte();
+        this.telefone = new TelefoneContribuinte();
         this.natureza_ocupacao = new Nat_ocupacao();
     }
 
@@ -89,19 +89,19 @@ public class Contribuinte {
         this.endereco = endereco;
     }
 
-    public Email getEmail() {
+    public EmailContribuinte getEmail() {
         return email;
     }
 
-    public void setEmail(Email email) {
+    public void setEmail(EmailContribuinte email) {
         this.email = email;
     }
 
-    public Telefone getTelefone() {
+    public TelefoneContribuinte getTelefone() {
         return telefone;
     }
 
-    public void setTelefone(Telefone telefone) {
+    public void setTelefone(TelefoneContribuinte telefone) {
         this.telefone = telefone;
     }
 
