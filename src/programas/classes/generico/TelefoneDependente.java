@@ -16,10 +16,6 @@ public class TelefoneDependente {
         return idTelefone;
     }
 
-    public Telefone() {
-        this.ddd = new DDD();
-        this.ddi = new DDI();
-    }
 
     public void setTelefone (String telefone) {
         this.telefone = telefone;
