@@ -1,13 +1,10 @@
 package programas.classes.generico;
 
-import programas.classes.casodeuso.*;
-
-public class TelefoneContribuinte {
+public class Telefone {
     public String telefone;
     private DDD ddd;
     private final DDI ddi;
     private int idTelefone;
-    private Contribuinte contribuinte;
 
     public void setidTelefone (int idTelefone) {
         this.idTelefone = idTelefone;
@@ -17,7 +14,7 @@ public class TelefoneContribuinte {
         return idTelefone;
     }
 
-    public TelefoneContribuinte () {
+    public Telefone() {
         this.ddd = new DDD();
         this.ddi = new DDI();
     }
@@ -44,13 +41,5 @@ public class TelefoneContribuinte {
     @Override
     public String toString() {
         return String.valueOf(telefone);
-    }
-
-    public void setContribuinte (Contribuinte contribuinte) {
-        this.contribuinte = contribuinte;
-    }
-
-    public Contribuinte getContribuinte() {
-        return contribuinte;
     }
 }

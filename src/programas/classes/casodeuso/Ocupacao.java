@@ -1,12 +1,10 @@
 package programas.classes.casodeuso;
 
 public class Ocupacao {
-    private int idOcupacao;
-    private String descricao;
 
-    public Ocupacao() {}
+    public int idOcupacao;
+    public String ocupacao;
 
-    // Getters and Setters
     public int getIdOcupacao() {
         return idOcupacao;
     }
@@ -15,11 +13,11 @@ public class Ocupacao {
         this.idOcupacao = idOcupacao;
     }
 
-    public String getDescricao() {
-        return descricao;
+    public String getOcupacao() {
+        return ocupacao;
     }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
+    public void setOcupacao(String ocupacao) {
+        this.ocupacao = ocupacao;
     }
 }

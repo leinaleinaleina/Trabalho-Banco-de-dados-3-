@@ -1,20 +1,9 @@
 package programas.classes.generico;
 
-import programas.classes.casodeuso.*;;
-
-public class EmailDependente {
+public class Email {
     private String email;
     private int idEmail;
-    public Dependente dependente;
     
-    public Dependente getDependente() {
-        return dependente;
-    }
-
-    public void setDependente(Dependente dependente) {
-        this.dependente = dependente;
-    }
-
     public void setidEmail (int idEmail) {
         this.idEmail = idEmail;
     }

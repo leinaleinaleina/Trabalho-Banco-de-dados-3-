@@ -1,11 +1,9 @@
 package programas.classes.generico;
 
-import programas.classes.casodeuso.*;
 
-public class EmailContribuinte {
+public class Email {
     private String email;
     private int idEmail;
-    public Contribuinte contribuinte;
     
     public void setidEmail (int idEmail) {
         this.idEmail = idEmail;
@@ -26,9 +24,5 @@ public class EmailContribuinte {
     @Override
     public String toString() {
         return String.valueOf(email);
-    }
-
-    public Contribuinte getContribuinte (Contribuinte contribuinte) {
-        return contribuinte;
     }
 }

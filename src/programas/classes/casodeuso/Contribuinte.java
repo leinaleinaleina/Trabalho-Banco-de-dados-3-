@@ -1,21 +1,27 @@
 package programas.classes.casodeuso;
 
-import programas.classes.generico.Endereco;
+import programas.classes.generico.*;
 
 public class Contribuinte {
-    private int idContribuinte;
-    private String nome;
-    private String CPF;
-    private String dataNascimento;
-    private String deficiencia;
-    private String alteracao;
-    private String companheiro;
-    private String residenteExterior;
-    private int numero;
-    private String complemento;
+    
+    public int idContribuinte;
+    public String nome;
+    public String data_nascimento;
+    public char defciciencia;
+    public char alteracao;
+    public char companheiro;
+    public char residente;
     private Endereco endereco;
+    private Email email;
+    private Telefone telefone;
+    private Nat_ocupacao natureza_ocupacao;
 
-    public Contribuinte () {}
+    public Contribuinte () {
+        this.endereco = new Endereco();
+        this.email = new Email();
+        this.telefone = new Telefone();
+        this.natureza_ocupacao = new Nat_ocupacao();
+    }
 
     public int getIdContribuinte() {
         return idContribuinte;
@@ -33,75 +39,76 @@ public class Contribuinte {
         this.nome = nome;
     }
 
-    public String getCPF() {
-        return CPF;
+    public String getData_nascimento() {
+        return data_nascimento;
     }
 
-    public void setCPF(String CPF) {
-        this.CPF = CPF;
+    public void setData_nascimento(String data_nascimento) {
+        this.data_nascimento = data_nascimento;
     }
 
-    public String getDataNascimento() {
-        return dataNascimento;
+    public char getDefciciencia() {
+        return defciciencia;
     }
 
-    public void setDataNascimento(String dataNascimento) {
-        this.dataNascimento = dataNascimento;
+    public void setDefciciencia(char defciciencia) {
+        this.defciciencia = defciciencia;
     }
 
-    public String getDeficiencia() {
-        return deficiencia;
-    }
-
-    public void setDeficiencia(String deficiencia) {
-        this.deficiencia = deficiencia;
-    }
-
-    public String getAlteracao() {
+    public char getAlteracao() {
         return alteracao;
     }
 
-    public void setAlteracao(String alteracao) {
+    public void setAlteracao(char alteracao) {
         this.alteracao = alteracao;
     }
 
-    public String getCompanheiro() {
+    public char getCompanheiro() {
         return companheiro;
     }
 
-    public void setCompanheiro(String companheiro) {
+    public void setCompanheiro(char companheiro) {
         this.companheiro = companheiro;
     }
 
-    public String getResidenteExterior() {
-        return residenteExterior;
+    public char getResidente() {
+        return residente;
     }
 
-    public void setResidenteExterior(String residenteExterior) {
-        this.residenteExterior = residenteExterior;
+    public void setResidente(char residente) {
+        this.residente = residente;
     }
 
-    public int getNumero() {
-        return numero;
+    public Endereco getEndereco() {
+        return endereco;
     }
 
-    public void setNumero(int numero) {
-        this.numero = numero;
-    }
-
-    public String getComplemento() {
-        return complemento;
-    }
-
-    public void setComplemento(String complemento) {
-        this.complemento = complemento;
-    }
-
-    public void setEndereco (Endereco endereco) {
+    public void setEndereco(Endereco endereco) {
         this.endereco = endereco;
     }
 
-    public Endereco getEndereco () {
-        return endereco;
+    public Email getEmail() {
+        return email;
     }
+
+    public void setEmail(Email email) {
+        this.email = email;
+    }
+
+    public Telefone getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(Telefone telefone) {
+        this.telefone = telefone;
+    }
+
+    public Nat_ocupacao getNatureza_ocupacao() {
+        return natureza_ocupacao;
+    }
+
+    public void setNatureza_ocupacao(Nat_ocupacao natureza_ocupacao) {
+        this.natureza_ocupacao = natureza_ocupacao;
+    }
+
 }
