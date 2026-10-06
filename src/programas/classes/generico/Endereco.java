@@ -6,6 +6,7 @@ public class Endereco {
     private Cidade cidade;
     private Logradouro logradouro;
     private int idEndereco;
+    public String tipo_endereco;
 
     public Endereco () {
         this.bairro = new Bairro();
@@ -55,5 +56,13 @@ public class Endereco {
     @Override
     public String toString() {
         return String.valueOf(CEP);
+    }
+
+    public String getTipo_endereco() {
+        return tipo_endereco;
+    }
+
+    public void setTipo_endereco(String tipo_endereco) {
+        this.tipo_endereco = tipo_endereco;
     }
 }

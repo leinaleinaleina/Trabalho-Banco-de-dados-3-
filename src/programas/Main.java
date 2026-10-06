@@ -1,43 +1,20 @@
-package app.main;
+package controller;
 
-import app.main.controller.SimulacaoController;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        // Declaramos a conexão aqui em cima para ela ser visível dentro do 'finally'
-        Connection connection = null;
+    public static Connection conectar() {
+        // Ajuste a porta e o nome do banco conforme sua configuração no MySQL Workbench
+        String url = "jdbc:mysql://localhost:3306/nome_do_seu_banco";
+        String usuario = "root";
+        String senha = "sua_senha";
 
         try {
-            System.out.println("Conectando ao banco de dados...");
-
-
-            connection = DriverManager.getConnection("jdbc:postgresql://localhost:6666/irpf2026", "postgres", "123456");
-
-            // Instancia o controller passando a conexão para ele usar nos serviços
-            SimulacaoController controller = new SimulacaoController(connection);
-
-            // inicia a interface
-            controller.iniciar(scanner);
-
-        } catch (Exception e) {
-            System.out.println("Erro crítico: " + e.getMessage());
-        } finally {
-            scanner.close();
-
-            // Fecha a conexão com o banco ao finalizar
-            if (connection != null) {
-                try {
-                    connection.close();
-                    System.out.println("Conexão fechada.");
-                } catch (SQLException e) {
-                    System.out.println("Erro ao fechar a conexão: " + e.getMessage());
-                }
-            }
+            return DriverManager.getConnection(url, usuario, senha);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao conectar: " + e.getMessage(), e);
         }
     }
 }
