@@ -1,15 +1,14 @@
 package programas.DAO;
 
-import programas.classes.casodeuso.Dependente;
-import programas.classes.casodeuso.Tipo_dependente;
-import programas.classes.generico.*;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import programas.classes.casodeuso.Dependente;
+import programas.classes.casodeuso.Tipo_dependente;
+import programas.classes.generico.*;
 
 public class DependenteDAO {
     private Connection conexao;
@@ -21,8 +20,6 @@ public class DependenteDAO {
     public List<Dependente> buscarDependentesPorCpfContribuinte(int idContribuinte) {
         List<Dependente> dependentes = new ArrayList<>();
 
-        // Consulta SQL unindo Dependente com suas tabelas auxiliares (Tipo, Email e Telefone)
-        // Ajustada para filtrar através da relação com a Declaração de Renda / Contribuinte
         String sql = "SELECT d.idDependente, d.Nome, d.CPF, d.Data_nascimento, d.Moradia_com_titular, d.Deducao, " +
                 "td.idTipo_dependente, td.Tipo_dependente, " +
                 "em.idEmail, em.Email, " +
@@ -36,8 +33,6 @@ public class DependenteDAO {
                 "INNER JOIN DDD ddd ON t.DDD_idDDD = ddd.idDDD " +
                 "INNER JOIN DDDI ddi ON ddd.DDDI_idDDDI = ddi.idDDDI " +
                 "INNER JOIN Declaracao_Renda dr ON dr.Identificacao_Contribuinte_idContribuinte = ?";
-        // Nota: Caso no seu banco a relação com dependente passe por outra tabela intermediária,
-        // o WHERE pode ser adaptado, mas este padrão via Contribuinte mantém a consistência do sistema.
 
         try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setInt(1, idContribuinte);
@@ -59,26 +54,8 @@ public class DependenteDAO {
                 tipoDep.setTipo_dependente(rs.getString("Tipo_dependente"));
                 dep.setTipo_dependente(tipoDep);
 
-                // E-mail do Dependente
-                EmailDependente email = new EmailDependente();
-                email.setidEmail(rs.getInt("idEmail"));
-                email.setEmail(rs.getString("Email"));
-                dep.setEmail(dep.getEmail());
-
-                // Telefone do Dependente
-                TelefoneDependente telefone = new TelefoneDependente();
-                telefone.setidTelefone(rs.getInt("idTelefone"));
-                telefone.setTelefone(rs.getString("fone"));
-
-                DDD dddObj = new DDD();
-                dddObj.setidDDD(rs.getInt("idDDD"));
-                dddObj.setDDD(rs.getInt("DDD"));
-                telefone.setDDD(dddObj);
-
-                DDI ddiObj = new DDI();
-                ddiObj.setidDDDI(rs.getInt("idDDDI"));
-                ddiObj.setDDDI(rs.getInt("DDDI"));
-                telefone.setDDI(ddiObj);
+                buscarTelefones(idContribuinte);
+                buscarEmails(idContribuinte);
 
                 dep.setTelefone(dep.getTelefone());
 
@@ -89,5 +66,59 @@ public class DependenteDAO {
             e.printStackTrace();
         }
         return dependentes;
+    }
+
+        public List<TelefoneDependente> buscarTelefones(int idDependente) throws SQLException {
+        String sql = "SELECT * FROM TelefoneDependente WHERE Dependente_idDependente = ?";
+        List<TelefoneDependente> telefones = new ArrayList<>();
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, idDependente);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                TelefoneDependente tel = new TelefoneDependente();
+                
+                tel.setTelefone(rs.getString("fone"));
+                tel.getDDD().setidDDD(rs.getInt("DDD_idDDD"));
+                tel.getDDI().setidDDDI(rs.getInt("DDD_DDDI_idDDDI"));
+                
+                telefones.add(tel);
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar telefones do Dependente: " + e.getMessage());
+            throw e;
+        }
+        
+        return telefones;
+    }
+    
+    public List<EmailDependente> buscarEmails(int idDependente) throws SQLException {
+        String sql = "SELECT * FROM Email_Dependente WHERE Dependente_idDependente = ?";
+        List<EmailDependente> emails = new ArrayList<>();
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, idDependente);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                EmailDependente email = new EmailDependente();
+                
+                email.setEmail(rs.getString("Email"));
+                
+                emails.add(email);
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar emails do dependente: " + e.getMessage());
+            throw e;
+        }
+        
+        return emails;
     }
 }

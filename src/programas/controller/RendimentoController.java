@@ -1,10 +1,9 @@
 package programas.controller;
 
-import programas.DAO.RendimentoDAO;
-import programas.classes.casodeuso.Rendimentos_trib_PJ;
-
 import java.sql.Connection;
 import java.util.List;
+import programas.DAO.RendimentoDAO;
+import programas.classes.casodeuso.Rendimentos_trib_PJ;
 
 public class RendimentoController {
 
@@ -17,7 +16,7 @@ public class RendimentoController {
     public void exibirRendimentos(int idContribuinte) {
         RendimentoDAO dao = new RendimentoDAO(conexao);
 
-        // Busca a lista de rendimentos tributáveis associados ao contribuinte
+
         List<Rendimentos_trib_PJ> rendimentos = dao.buscarTributaveisPorCpf(idContribuinte);
 
         System.out.println("\n=================================================");

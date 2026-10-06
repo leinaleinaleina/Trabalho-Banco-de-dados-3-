@@ -1,10 +1,10 @@
 package programas.controller;
 
-import programas.DAO.DependenteDAO;
-import programas.classes.casodeuso.Dependente;
-
 import java.sql.Connection;
-import java.util.List;
+import java.util.*;
+import programas.DAO.*;
+import programas.classes.casodeuso.*;
+import programas.classes.generico.*;
 
 public class DependenteController {
 
@@ -17,7 +17,6 @@ public class DependenteController {
     public void exibirDependentes(int idContribuinte) {
         DependenteDAO dao = new DependenteDAO(conexao);
 
-        // Busca a lista de dependentes associados ao contribuinte
         List<Dependente> dependentes = dao.buscarDependentesPorCpfContribuinte(idContribuinte);
 
         System.out.println("\n=================================================");
@@ -35,34 +34,15 @@ public class DependenteController {
                 System.out.println("Reside com o Titular: " + formatarSimNao(dep.getMoradia_titular()));
                 System.out.println("Valor da Dedução: R$ " + formatarValor(dep.getDeducao()));
 
-                // Tipo do dependente (se a classe estiver preenchida)
-                if (dep.getTipo_dependente() != null) {
-                    System.out.println("Tipo de Dependente: " + dep.getTipo_dependente().getTipo_dependente());
-                }
+                listarContatosDependente(idContribuinte);
 
-                // Contatos do dependente
-                if (dep.getEmail() != null) {
-                    System.out.println("E-mail: " + dep.getEmail().getEmail());
-                }
 
-                if (dep.getTelefone() != null) {
-                    String ddi = (dep.getTelefone().getDDI() != null) ? "+" + dep.getTelefone().getDDI().getDDI() + " " : "";
-                    String ddd = (dep.getTelefone().getDDD() != null) ? "(" + dep.getTelefone().getDDD().getDDD() + ") " : "";
-                    String numero = (dep.getTelefone().getTelefone() != null) ? dep.getTelefone().getTelefone() : "";
-
-                    System.out.println("Telefone: " + ddi + ddd + numero);
-                }
-
-                System.out.println("-------------------------------------------------");
             }
         } else {
             System.out.println("Nenhum dependente cadastrado para este contribuinte.");
         }
     }
 
-    /**
-     * Métodos auxiliares para formatação visual na consola.
-     */
     private String formatarSimNao(Object valor) {
         if (valor == null) return "Não informado";
         String strValor = valor.toString().toUpperCase();
@@ -79,4 +59,39 @@ public class DependenteController {
     private String formatarTexto(String texto) {
         return (texto != null && !texto.isEmpty()) ? texto : "Não informado";
     }
+
+     public void listarContatosDependente(int idDependente) {
+            DependenteDAO dao = new DependenteDAO(conexao); 
+            
+            try {
+
+                List<TelefoneDependente> telefones = dao.buscarTelefones(idDependente);
+                List<EmailDependente> emails = dao.buscarEmails(idDependente);
+                
+                System.out.println("\n--- Contatos do Dependente ID: " + idDependente + " ---");
+                
+                System.out.println("Telefones encontrados:");
+                if (telefones.isEmpty()) {
+                    System.out.println("Nenhum telefone registrado.");
+                } else {
+                    for (TelefoneDependente tel : telefones) {
+
+                        System.out.println("- [" + tel.getDDI().getidDDI() + " " + tel.getDDD().getidDDD() + "] " + tel.getTelefone());
+                    }
+                }
+                
+                System.out.println("\nE-mails encontrados:");
+                if (emails.isEmpty()) {
+                    System.out.println("Nenhum e-mail registrado.");
+                } else {
+                    for (EmailDependente email : emails) {
+
+                        System.out.println("- " + email.getEmail());
+                    }
+                }
+                
+            } catch (Exception e) {
+                System.err.println("Falha ao recuperar os contatos: " + e.getMessage());
+            }
+        }
 }

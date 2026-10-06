@@ -1,11 +1,10 @@
 package programas.controller;
 
+import java.sql.Connection;
+import java.util.List;
 import programas.DAO.ImpostoPagoDAO;
 import programas.classes.casodeuso.Declaracao_renda;
 import programas.classes.casodeuso.Imposto_pago;
-
-import java.sql.Connection;
-import java.util.List;
 
 public class ImpostoPagoController {
 
@@ -18,7 +17,7 @@ public class ImpostoPagoController {
     public void exibirIRPFAnteriores(int idContribuinte) {
         ImpostoPagoDAO dao = new ImpostoPagoDAO(conexao);
 
-        // Chama o DAO para buscar a lista de declarações vinculadas ao contribuinte
+
         List<Declaracao_renda> declaracoes = dao.buscarIrpfAnterioresPorCpf(idContribuinte);
 
         System.out.println("\n=================================================");
@@ -32,13 +31,12 @@ public class ImpostoPagoController {
 
                 System.out.println("Declaração #" + dec.getIdDeclaração_renda());
 
-                // Atendendo ao requisito exato do seu colega
                 String valorDevido = dec.getImposto_devido() != null ? dec.getImposto_devido() : "0,00";
                 System.out.println("IRPF - Declarado no valor de R$ " + valorDevido);
 
                 if (ip != null) {
                     System.out.println("\n--- Detalhes do Imposto Pago ---");
-                    // O método formatarValor evita que apareça a palavra "null" no terminal
+
                     System.out.println("Imposto Retido Titular: R$ " + formatarValor(ip.getImposto_retido_titular()));
                     System.out.println("Imposto Retido Dependente: R$ " + formatarValor(ip.getImposto_retido_dependente()));
                     System.out.println("Carnê Leão Titular: R$ " + formatarValor(ip.getCarne_titular()));

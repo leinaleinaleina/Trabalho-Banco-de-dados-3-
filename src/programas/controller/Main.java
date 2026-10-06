@@ -26,7 +26,7 @@ public class SimulacaoController {
         System.out.print("Inserir CPF: ");
         String cpf = scanner.nextLine().trim();
 
-        // Validação básica (pode ser aprimorada depois)
+         
         if (cpf.isEmpty()) {
             System.out.println("CPF inválido. A encerrar...");
             return;

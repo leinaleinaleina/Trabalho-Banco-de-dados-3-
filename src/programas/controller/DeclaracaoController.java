@@ -16,15 +16,13 @@ public class DeclaracaoController {
         this.scanner = new Scanner(System.in);
     }
 
-    public void iniciarMenu() {
-        System.out.println("\n=================================================");
-        System.out.println("           SISTEMA DE GESTÃO IRPF 2026           ");
-        System.out.println("=================================================");
+    public static void main(String[] args) {
+
+        System.out.println("SISTEMA DE GESTÃO IRPF 2026");
 
         int idContribuinteLogado = -1;
         String cpfDigitado = "";
 
-        // CPF antes do menu
         while (idContribuinteLogado == -1) {
             System.out.print("Digite o CPF do Contribuinte: ");
             cpfDigitado = scanner.nextLine().trim();
@@ -35,7 +33,6 @@ public class DeclaracaoController {
                 continue;
             }
 
-           //Validação no BD
             idContribuinteLogado = buscarIdPorCpf(cpfDigitado);
 
             if (idContribuinteLogado == -1) {
@@ -94,7 +91,7 @@ public class DeclaracaoController {
                     relatorioCtrl.exibirRelatorioCompleto();
                     break;
                 case 0:
-                    System.out.println("Encerrando o sistema. Até logo!");
+                    System.out.println("Encerrando o sistema");
                     break;
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
@@ -102,9 +99,7 @@ public class DeclaracaoController {
         }
     }
 
-    /**
-     * MÉTODO AUXILIAR PARA CONSULTAR O ID DO CONTRIBUINTE
-     */
+ 
     private int buscarIdPorCpf(String cpf) {
         String sql = "SELECT idContribuinte FROM Contribuinte WHERE CPF = ?";
         try (PreparedStatement stmt = conexao.prepareStatement(sql)) {

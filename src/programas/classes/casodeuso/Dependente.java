@@ -7,7 +7,7 @@ public class Dependente {
     public String Nome;
     public String CPF;
     public String Data_nascimento;
-    public char Moradia_titular;
+    public String Moradia_titular;
     public String Deducao;
     private TelefoneDependente telefone;
     private EmailDependente email;
@@ -45,7 +45,7 @@ public class Dependente {
         this.Data_nascimento = Data_nascimento;
     }
 
-    public char getMoradia_titular() {
+    public String getMoradia_titular() {
         return Moradia_titular;
     }
 

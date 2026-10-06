@@ -1,23 +1,23 @@
 package programas.DAO;
 
-import programas.classes.casodeuso.Contribuinte;
-import programas.classes.casodeuso.Nat_ocupacao;
-import programas.classes.casodeuso.Ocupacao;
-import programas.classes.generico.Endereco;
-import programas.classes.generico.Bairro;
-import programas.classes.generico.Logradouro;
-import programas.classes.generico.TipoLogradouro;
-import programas.classes.generico.Cidade;
-import programas.classes.generico.UF;
-import programas.classes.generico.TelefoneContribuinte;
-import programas.classes.generico.DDD;
-import programas.classes.generico.DDI;
-import programas.classes.generico.EmailContribuinte;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.*;
+import programas.classes.casodeuso.Contribuinte;
+import programas.classes.casodeuso.Nat_ocupacao;
+import programas.classes.casodeuso.Ocupacao;
+import programas.classes.generico.Bairro;
+import programas.classes.generico.Cidade;
+import programas.classes.generico.DDD;
+import programas.classes.generico.DDI;
+import programas.classes.generico.EmailContribuinte;
+import programas.classes.generico.Endereco;
+import programas.classes.generico.Logradouro;
+import programas.classes.generico.TelefoneContribuinte;
+import programas.classes.generico.TipoLogradouro;
+import programas.classes.generico.UF;
 
 public class ContribuinteDAO {
     private Connection conexao;
@@ -51,7 +51,8 @@ public class ContribuinteDAO {
                 "INNER JOIN Email em ON c.Email_idEmail = em.idEmail " +
                 "WHERE c.idContribuinte = ? AND e.Tipo_endereco = 0";
 
-        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+        try (Connection conn = ConnectionFactory.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, idContribuinte);
             ResultSet rs = stmt.executeQuery();
 
@@ -134,11 +135,7 @@ public class ContribuinteDAO {
                 endereco.setCidade(cidade);
 
                 contribuinte.setEndereco(endereco);
-
-                // Telefone
                 TelefoneContribuinte telefone = new TelefoneContribuinte();
-                telefone.setidTelefone(rs.getInt("idTelefone"));
-                telefone.setTelefone(rs.getString("fone"));
 
                 DDD dddObj = new DDD();
                 dddObj.setidDDD(rs.getInt("idDDD"));
@@ -152,15 +149,64 @@ public class ContribuinteDAO {
 
                 contribuinte.setTelefone(telefone);
 
-                // Email
-                EmailContribuinte email = new EmailContribuinte();
-                email.setidEmail(rs.getInt("idEmail"));
-                email.setEmail(rs.getString("Email"));
-                contribuinte.setEmail(email);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return contribuinte;
+    }
+
+    public List<TelefoneContribuinte> buscarTelefones(int idContribuinte) throws SQLException {
+        String sql = "SELECT * FROM TelefoneContribuinte WHERE Contribuinte_idContribuinte = ?";
+        List<TelefoneContribuinte> telefones = new ArrayList<>();
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, idContribuinte);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                TelefoneContribuinte tel = new TelefoneContribuinte();
+                
+                tel.setTelefone(rs.getString("fone"));
+                tel.getDDD().setidDDD(rs.getInt("DDD_idDDD"));
+                tel.getDDI().setidDDDI(rs.getInt("DDD_DDDI_idDDDI"));
+                
+                telefones.add(tel);
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar telefones do contribuinte: " + e.getMessage());
+            throw e;
+        }
+        
+        return telefones;
+    }
+    
+    public List<EmailContribuinte> buscarEmails(int idContribuinte) throws SQLException {
+        String sql = "SELECT * FROM Email_Contribuinte WHERE Contribuinte_idContribuinte = ?";
+        List<EmailContribuinte> emails = new ArrayList<>();
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, idContribuinte);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                EmailContribuinte email = new EmailContribuinte();
+                
+                email.setEmail(rs.getString("Email"));
+                
+                emails.add(email);
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar emails do contribuinte: " + e.getMessage());
+            throw e;
+        }
+        
+        return emails;
     }
 }

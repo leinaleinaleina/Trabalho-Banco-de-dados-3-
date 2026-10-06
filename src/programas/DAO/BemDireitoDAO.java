@@ -1,14 +1,13 @@
 package programas.DAO;
 
-import programas.classes.casodeuso.Bens_direitos;
-import programas.classes.generico.Endereco;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import programas.classes.casodeuso.Bens_direitos;
+import programas.classes.generico.Endereco;
 
 public class BemDireitoDAO {
     private Connection conexao;
@@ -37,27 +36,25 @@ public class BemDireitoDAO {
             while (rs.next()) {
                 Bens_direitos bem = new Bens_direitos();
 
-                // Mapeamento dos atributos diretos com base na sua entidade Bens_direitos
                 bem.setIdBens(rs.getInt("idBens_direitos"));
                 bem.setPais(rs.getString("Pais"));
                 bem.setIPTU(rs.getString("IPTU"));
                 bem.setData_aquisicao(rs.getString("Data_aquisicao"));
                 bem.setDiscriminacao(rs.getString("Discriminacao"));
 
-                // Atenção: a coluna no banco possui acento ("Área_total"), mas o setter é sem acento
                 bem.setArea_total(rs.getString("Área_total"));
 
-                // Conversão do TINYINT do banco de dados para char
+  
                 String cadastroImoveisStr = rs.getString("Cadastro_imoveis");
                 if(cadastroImoveisStr != null && !cadastroImoveisStr.isEmpty()) {
                     bem.setCadastro_imoveis(cadastroImoveisStr.charAt(0));
                 }
 
-                // Mapeia os dados do BD para as variáveis atualizadas (2024 e 2025) da entidade
+
                 bem.setSituacao_2024(rs.getString("Situacao2023"));
                 bem.setSituacao_2025(rs.getString("Situacao2024"));
 
-                // Endereço vinculado ao Bem
+
                 Endereco endereco = new Endereco();
                 endereco.setidEndereco(rs.getInt("idEndereco"));
                 endereco.setCEP(rs.getString("CEP"));

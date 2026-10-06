@@ -1,9 +1,10 @@
 package programas.controller;
 
-import programas.DAO.ContribuinteDAO;
-import programas.classes.casodeuso.Contribuinte;
-
 import java.sql.Connection;
+import java.util.*;
+import programas.DAO.*;
+import programas.classes.casodeuso.*;
+import programas.classes.generico.*;
 
 public class ContribuinteController {
 
@@ -16,7 +17,7 @@ public class ContribuinteController {
     public void exibirDadosContribuinte(int idContribuinte) {
         ContribuinteDAO dao = new ContribuinteDAO(conexao);
 
-        // Assumindo que o método no seu DAO se chama buscarPorId (ajuste se necessário)
+
         Contribuinte c = dao.buscarPorCpf(idContribuinte);
 
         if (c != null) {
@@ -36,33 +37,39 @@ public class ContribuinteController {
 
             System.out.println("\n--- CONTATO E ENDEREÇO ---");
 
-            if (c.getEmail() != null) {
-                // Assumindo que a classe EmailContribuinte possui o método getEmail()
-                System.out.println("E-mail: " + c.getEmail().getEmail());
-            }
-
-            if (c.getTelefone() != null && c.getTelefone().getDDD() != null) {
-                // Assumindo que TelefoneContribuinte possui os métodos getDDD() e getTelefone()
-                System.out.println("Telefone: (" + c.getTelefone().getDDD().getDDD() + ") " + c.getTelefone().getTelefone());
-            }
-
             if (c.getEndereco() != null) {
-                System.out.println("CEP: " + c.getEndereco().getCEP());
-            }
+                            System.out.println("CEP: " + c.getEndereco().getCEP());
+                            
+                            if (c.getEndereco().getLogradouro() != null) {
+                                System.out.println("Logradouro: " + c.getEndereco().getLogradouro().getLogradouro());
+                            }
+                            
+                            System.out.println("Número: " + c.getNumero());
+                            System.out.println("Complemento: " + (c.getComplemento() != null ? c.getComplemento() : "N/A"));
+                            
+                            if (c.getEndereco().getBairro() != null) {
+                                System.out.println("Bairro: " + c.getEndereco().getBairro().getBairro());
+                            }
+                            
+                            if (c.getEndereco().getCidade() != null) {
+                                System.out.println("Cidade: " + c.getEndereco().getCidade().getCidade());
+                                if (c.getEndereco().getCidade().getUF() != null) {
+                                    System.out.println("UF: " + c.getEndereco().getCidade().getUF().getUF());
+                                }
+                            }
+                        } else {
+                            System.out.println("Endereço: Não carregado ou inexistente.");
 
-            // Imprimindo Número e Complemento que foram definidos na entidade
+            listarContatosContribuinte(idContribuinte);
+
             System.out.println("Número: " + c.getNumero());
             System.out.println("Complemento: " + (c.getComplemento() != null ? c.getComplemento() : "N/A"));
 
             System.out.println("=================================================\n");
-        } else {
-            System.out.println("Nenhum dado encontrado para o ID especificado.");
-        }
+        } 
     }
-
-    /**
-     * Método auxiliar para transformar o char da entidade em texto legível.
-     */
+    }
+  
     private String formatarSimNao(Object valor) {
         if (valor == null) return "Não informado";
 
@@ -73,5 +80,40 @@ public class ContribuinteController {
             return "Sim";
         }
         return "Não";
+    }
+
+    public void listarContatosContribuinte(int idContribuinte) {
+        ContribuinteDAO dao= new ContribuinteDAO(conexao);  
+        
+        try {
+            // Recebe as listas geradas pelo DAO
+            List<TelefoneContribuinte> telefones = dao.buscarTelefones(idContribuinte);
+            List<EmailContribuinte> emails = dao.buscarEmails(idContribuinte);
+            
+            System.out.println("\n--- Contatos do Contribuinte ID: " + idContribuinte + " ---");
+            
+            System.out.println("Telefones encontrados:");
+            if (telefones.isEmpty()) {
+                System.out.println("Nenhum telefone registrado.");
+            } else {
+                for (TelefoneContribuinte tel : telefones) {
+                    // Iterando a partir da array list
+                    System.out.println("- [" + tel.getDDI().getidDDI() + " " + tel.getDDD().getidDDD() + "] " + tel.getTelefone());
+                }
+            }
+            
+            System.out.println("\nE-mails encontrados:");
+            if (emails.isEmpty()) {
+                System.out.println("Nenhum e-mail registrado.");
+            } else {
+                for (EmailContribuinte email : emails) {
+                    // Iterando a partir da array list
+                    System.out.println("- " + email.getEmail());
+                }
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Falha ao recuperar os contatos: " + e.getMessage());
+        }
     }
 }
