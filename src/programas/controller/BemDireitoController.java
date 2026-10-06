@@ -2,34 +2,45 @@ package programas.controller;
 
 import programas.DAO.BemDireitoDAO;
 import programas.classes.casodeuso.Bens_direitos;
+
 import java.sql.Connection;
 import java.util.List;
 
 public class BemDireitoController {
 
-    private BemDireitoDAO dao;
+    private Connection conexao;
 
-    public BemDireitoController(Connection connection) {
-        // Conecta o Controller diretamente ao DAO
-        this.dao = new BemDireitoDAO(connection);
+    public BemDireitoController(Connection conexao) {
+        this.conexao = conexao;
     }
 
-    public void consultarPatrimonio(String cpf) {
-        // O DAO busca no banco e retorna a lista de objetos de domínio
+    public void exibirBensDireitos(int cpf) {
+        // Instancia o DAO e busca a lista de bens no banco de dados
+        BemDireitoDAO dao = new BemDireitoDAO(conexao);
         List<Bens_direitos> bens = dao.buscarPatrimonio(cpf);
 
-        if (bens == null || bens.isEmpty()) {
-            System.out.println("Nenhum bem ou direito encontrado para o CPF: " + cpf);
-            return;
-        }
+        System.out.println("\n=== BENS E DIREITOS ===");
 
-        System.out.println("--- Evolução de Bens e Direitos ---");
-        for (Bens_direitos bem : bens) {
-            // Utiliza a classe de domínio Bens_direitos e as colunas corretas de anos
-            System.out.println("Bem: " + bem.getDiscriminacao());
-            System.out.println("Valor em 2023: R$ " + (bem.getSituacao2023() != null ? bem.getSituacao2023() : "0.00"));
-            System.out.println("Valor em 2024: R$ " + (bem.getSituacao2024() != null ? bem.getSituacao2024() : "0.00"));
-            System.out.println("-----------------------------------");
+        // Verifica se a lista não está vazia
+        if (bens != null && !bens.isEmpty()) {
+            // Percorre a lista e imprime os dados de cada bem
+            for (int i = 0; i < bens.size(); i++) {
+                Bens_direitos bem = bens.get(i);
+
+                System.out.println("Item #" + (i + 1));
+                System.out.println("Discriminação: " + bem.getDiscriminacao());
+                System.out.println("País: " + bem.getPais());
+                System.out.println("IPTU: " + bem.getIPTU());
+                System.out.println("Data de Aquisição: " + bem.getData_aquisicao());
+                System.out.println("Área Total: " + bem.getArea_total());
+                System.out.println("Cadastro de Imóveis: " + bem.getCadastro_imoveis());
+                System.out.println("Situação em 2024: R$ " + bem.getSituacao_2024());
+                System.out.println("Situação em 2025: R$ " + bem.getSituacao_2025());
+                System.out.println("CEP do Imóvel: " + bem.getEndereco().getCEP());
+                System.out.println("---------------------------------------------");
+            }
+        } else {
+            System.out.println("Nenhum bem ou direito encontrado para o CPF: " + cpf);
         }
     }
 }

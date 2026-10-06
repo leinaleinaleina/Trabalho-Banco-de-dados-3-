@@ -26,5 +26,6 @@ public class DDI {
     }
 
     public void setDDDI(int dddi) {
+
     }
 }
