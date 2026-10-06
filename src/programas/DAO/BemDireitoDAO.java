@@ -1,41 +1,71 @@
 package programas.DAO;
 
-import programas.classes.casodeuso.*;
-import programas.classes.generico.*;
+import programas.classes.casodeuso.Bens_direitos;
+import programas.classes.generico.Endereco;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BemDireitoDAO {
-    private Connection connection;
+    private Connection conexao;
 
-    public BemDireitoDAO(Connection connection) {
-        this.connection = connection;
+    public BemDireitoDAO(Connection conexao) {
+        this.conexao = conexao;
     }
 
-    public List<BemDireitoDAO> buscarPatrimonio(String cpf) {
-        List<BemDireitoDAO> bens = new ArrayList<>();
+    public List<Bens_direitos> buscarPatrimonio(int cpfContribuinte) {
+        List<Bens_direitos> bens = new ArrayList<>();
 
-        // O JOIN exato dependerá de como o seu colega conectou Bens_direitos ao Contribuinte no MER
-        String sql = "SELECT b.Discriminacao, b.Situacao2023, b.Situacao2024 " +
-                    "FROM Bens_direitos b " +
-               // "INNER JOIN Contribuinte c ON b.A_DEFINIR = c.idContribuinte " +
-                "WHERE c.CPF = ?";
+        // O JOIN correto passa pela Declaracao_Renda para chegar ao ID do Contribuinte (CPF)
+        String sql = "SELECT bd.idBens_direitos, bd.Pais, bd.IPTU, bd.Data_aquisicao, " +
+                "bd.Discriminacao, bd.Área_total, bd.Cadastro_imoveis, " +
+                "bd.Situacao2023, bd.Situacao2024, " +
+                "e.idEndereco, e.CEP " +
+                "FROM Bens_direitos bd " +
+                "INNER JOIN Declaracao_Renda dr ON bd.Declaracao_Renda_idDeclaracao_Renda = dr.idDeclaracao_Renda " +
+                "LEFT JOIN Endereco e ON bd.Endereco_idEndereco = e.idEndereco " +
+                "WHERE dr.Identificacao_Contribuinte_idContribuinte = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, cpf);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    bens.add(new BemDireitoDAO(
-                            rs.getString("Discriminacao"),
-                            rs.getString("Situacao2023"),
-                            rs.getString("Situacao2024")
-                    ));
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setInt(1, cpfContribuinte);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Bens_direitos bem = new Bens_direitos();
+
+                // Mapeamento dos atributos diretos com base na sua entidade Bens_direitos
+                bem.setIdBens(rs.getInt("idBens_direitos"));
+                bem.setPais(rs.getString("Pais"));
+                bem.setIPTU(rs.getString("IPTU"));
+                bem.setData_aquisicao(rs.getString("Data_aquisicao"));
+                bem.setDiscriminacao(rs.getString("Discriminacao"));
+
+                // Atenção: a coluna no banco possui acento ("Área_total"), mas o setter é sem acento
+                bem.setArea_total(rs.getString("Área_total"));
+
+                // Conversão do TINYINT do banco de dados para char
+                String cadastroImoveisStr = rs.getString("Cadastro_imoveis");
+                if(cadastroImoveisStr != null && !cadastroImoveisStr.isEmpty()) {
+                    bem.setCadastro_imoveis(cadastroImoveisStr.charAt(0));
                 }
+
+                // Mapeia os dados do BD para as variáveis atualizadas (2024 e 2025) da entidade
+                bem.setSituacao_2024(rs.getString("Situacao2023"));
+                bem.setSituacao_2025(rs.getString("Situacao2024"));
+
+                // Endereço vinculado ao Bem
+                Endereco endereco = new Endereco();
+                endereco.setidEndereco(rs.getInt("idEndereco"));
+                endereco.setCEP(rs.getString("CEP"));
+                bem.setEndereco(endereco);
+
+                bens.add(bem);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("Erro ao buscar bens e direitos: " + e.getMessage());
         }
         return bens;
