@@ -17,7 +17,6 @@ public class TelefoneContribuinte {
         return idTelefone;
     }
 
-
     public void setTelefone (String telefone) {
         this.telefone = telefone;
     }
@@ -29,8 +28,14 @@ public class TelefoneContribuinte {
     public void setDDD(DDD ddd) {
         this.ddd = ddd;
     }
+
     public DDD getDDD() {
         return ddd;
+    }
+
+    // Método adicionado para o DDI
+    public void setDDI(DDI ddi) {
+        this.ddi = ddi;
     }
 
     public DDI getDDI() {

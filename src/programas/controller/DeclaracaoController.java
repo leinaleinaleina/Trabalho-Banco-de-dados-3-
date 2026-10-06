@@ -1,76 +1,84 @@
-package app.main.service;
+package programas.controller;
 
-import app.main.dto.*;
-import app.main.repository.*;
 import java.sql.Connection;
-import java.util.List;
+import java.util.Scanner;
 
-public class DeclaracaoService {
+public class DeclaracaoController {
 
-    // Instanciamos todos os repositórios que você já criou
-    private ContribuinteRepository contribuinteRepo;
-    private RendimentoRepository rendimentoRepo;
-    private ImpostoPagoRepository impostoPagoRepo;
-    private BemDireitoRepository bemDireitoRepo;
+    private Connection connection;
 
-    public DeclaracaoService(Connection connection) {
-        this.contribuinteRepo = new ContribuinteRepository(connection);
-        this.rendimentoRepo = new RendimentoRepository(connection);
-        this.impostoPagoRepo = new ImpostoPagoRepository(connection);
-        this.bemDireitoRepo = new BemDireitoRepository(connection);
+    // Instâncias dos outros controladores do pacote
+    private ContribuinteController contribuinteController;
+    private ImpostoPagoController impostoPagoController;
+    private RendimentoController rendimentoController;
+    private BemDireitoController bemDireitoController;
+
+    public DeclaracaoController(Connection connection) {
+        this.connection = connection;
+        this.contribuinteController = new ContribuinteController(connection);
+        this.impostoPagoController = new ImpostoPagoController(connection);
+        this.rendimentoController = new RendimentoController(connection);
+        this.bemDireitoController = new BemDireitoController(connection);
     }
 
-    public void gerarRelatorio(String cpf) {
+    public void iniciar(Scanner scanner) {
+        System.out.println("===================== Sistema IRPF 2026 =====================");
+        System.out.print("Inserir CPF: ");
+        String cpf = scanner.nextLine().trim();
+
+        if (cpf.isEmpty()) {
+            System.out.println("CPF inválido. Encerrando o sistema...");
+            return;
+        }
+
+        System.out.println("CPF Validado.\n");
+        int opcao = 0;
+
+        do {
+            System.out.println("1. Contribuinte (dados pessoa e endereço)");
+            System.out.println("2. IRPF (Pagamento - 2026 pra trás)");
+            System.out.println("3. Tributaveis recebidos");
+            System.out.println("5. Relatório Completo");
+            System.out.println("0. Sair");
+            System.out.print("Escolha uma opção: ");
+
+            if (scanner.hasNextInt()) {
+                opcao = scanner.nextInt();
+                scanner.nextLine(); // Limpar o buffer do teclado
+
+                switch (opcao) {
+                    // Supõe-se que seu colega criará métodos de busca nesses controladores
+                    case 1 -> contribuinteController.consultarDados(cpf);
+                    case 2 -> impostoPagoController.consultarHistorico(cpf);
+                    case 3 -> rendimentoController.consultarRendimentos(cpf);
+                    case 5 -> gerarRelatorioCompleto(cpf);
+                    case 0 -> System.out.println("Encerrando o sistema...");
+                    default -> System.out.println("Opção inválida.");
+                }
+            } else {
+                System.out.println("Entrada inválida. Digite um número.");
+                scanner.nextLine();
+            }
+            System.out.println();
+        } while (opcao != 0);
+    }
+
+    private void gerarRelatorioCompleto(String cpf) {
         System.out.println("\n=============================================================");
         System.out.println("            RELATÓRIO COMPLETO - IRPF 2026");
         System.out.println("=============================================================");
 
-        // 1. Busca e imprime os dados do Contribuinte
-        ContribuinteDTO contribuinte = contribuinteRepo.buscarPorCpf(cpf);
-        if (contribuinte == null) {
-            System.out.println("Erro: Contribuinte não encontrado para o CPF " + cpf);
-            return; // Se não achar a pessoa, cancela o resto do relatório
-        }
-
         System.out.println("\n[1] DADOS DO CONTRIBUINTE");
-        System.out.println("Nome: " + contribuinte.getNome());
-        System.out.println("CPF: " + contribuinte.getCpf());
-        System.out.println("E-mail: " + (contribuinte.getEmail() != null ? contribuinte.getEmail() : "N/A"));
-        System.out.println("Telefone: " + (contribuinte.getTelefone() != null ? contribuinte.getTelefone() : "N/A"));
-        System.out.println("Endereço: " + contribuinte.getEnderecoCompleto());
+        contribuinteController.consultarDados(cpf);
 
-        // 2. Busca e imprime os Rendimentos Tributáveis
         System.out.println("\n[2] RENDIMENTOS TRIBUTÁVEIS RECEBIDOS");
-        List<RendimentoDTO> rendimentos = rendimentoRepo.buscarTributaveis(cpf);
-        if (rendimentos.isEmpty()) {
-            System.out.println("Nenhum rendimento registrado.");
-        } else {
-            for (RendimentoDTO r : rendimentos) {
-                System.out.println("- " + r.getFontePagadora() + " | Valor: R$ " + r.getValorRecebido());
-            }
-        }
+        rendimentoController.consultarRendimentos(cpf);
 
-        // 3. Busca e imprime os Impostos Pagos Anteriormente
-        System.out.println("\n[3] IRPF PAGO ANTERIORMENTE (Até 2025)");
-        List<ImpostoPagoDTO> pagamentos = impostoPagoRepo.buscarHistorico(cpf);
-        if (pagamentos.isEmpty()) {
-            System.out.println("Nenhum imposto pago anteriormente registrado.");
-        } else {
-            for (ImpostoPagoDTO p : pagamentos) {
-                System.out.println("- Valor: R$ " + p.getValor() + " | CNPJ: " + p.getCnpjBeneficiario());
-            }
-        }
+        System.out.println("\n[3] IRPF PAGO ANTERIORMENTE");
+        impostoPagoController.consultarHistorico(cpf);
 
-        // 4. Busca e imprime os Bens e Direitos
         System.out.println("\n[4] EVOLUÇÃO DE BENS E DIREITOS");
-        List<BemDireitoDTO> bens = bemDireitoRepo.buscarPatrimonio(cpf);
-        if (bens.isEmpty()) {
-            System.out.println("Nenhum bem ou direito registrado.");
-        } else {
-            for (BemDireitoDTO b : bens) {
-                System.out.println("- " + b.getDiscriminacao() + " | 2023: R$ " + b.getSituacao2023() + " -> 2024: R$ " + b.getSituacao2024());
-            }
-        }
+        bemDireitoController.consultarPatrimonio(cpf);
 
         System.out.println("=============================================================\n");
     }

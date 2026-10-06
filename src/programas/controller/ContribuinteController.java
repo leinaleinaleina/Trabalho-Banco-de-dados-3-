@@ -1,27 +1,30 @@
-package app.main.service;
+package programas.controller;
 
-import app.main.dto.ContribuinteDTO;
-import app.main.repository.ContribuinteRepository;
+import programas.DAO.ContribuinteDAO;
+import programas.classes.casodeuso.Contribuinte;
 import java.sql.Connection;
 
-public class ContribuinteService {
+public class ContribuinteController {
 
-    private ContribuinteRepository repository;
+    private ContribuinteDAO dao;
 
-    public ContribuinteService(Connection connection) {
-        this.repository = new ContribuinteRepository(connection);
+    public ContribuinteController(Connection connection) {
+        this.dao = new ContribuinteDAO(connection);
     }
 
-    public void buscarDadosCompletos(String cpf) {
-        ContribuinteDTO dados = repository.buscarPorCpf(cpf);
+    public void consultarDados(String cpf) {
+        Contribuinte dados = dao.buscarPorCpf(cpf);
 
         if (dados != null) {
             System.out.println("Nome: " + dados.getNome());
-            System.out.println("CPF: " + dados.getCpf());
-            System.out.println("Nascimento: " + dados.getDataNascimento());
-            System.out.println("E-mail: " + (dados.getEmail() != null ? dados.getEmail() : "Nenhum registado"));
-            System.out.println("Telefone: " + (dados.getTelefone() != null ? dados.getTelefone() : "Nenhum registado"));
-            System.out.println("Endereço: " + dados.getEnderecoCompleto());
+            // System.out.println("CPF: " + dados.getCpf()); // Veja o aviso abaixo sobre o CPF
+            System.out.println("Nascimento: " + dados.getData_nascimento());
+
+            // Acessando os objetos aninhados que seu colega criou
+            System.out.println("E-mail: " + dados.getEmail()); // O ideal é ter um dados.getEmail().getEmail()
+            System.out.println("Telefone: " + dados.getTelefone());
+            System.out.println("CEP do Endereço: " + dados.getEndereco().getCEP());
+            System.out.println("Número: " + dados.getNumero());
         } else {
             System.out.println("Nenhum contribuinte encontrado com o CPF: " + cpf);
         }

@@ -24,4 +24,7 @@ public class DDI {
     public String toString() {
         return String.valueOf(DDI);
     }
+
+    public void setDDDI(int dddi) {
+    }
 }
