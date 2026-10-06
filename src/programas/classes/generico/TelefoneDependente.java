@@ -48,4 +48,8 @@ public class TelefoneDependente {
     public void setDependente(Dependente dependente) {
         this.dependente = dependente;
     }
+
+
+    public void setDDI(DDI ddiObj) {
+    }
 }

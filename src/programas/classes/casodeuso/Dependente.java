@@ -49,7 +49,7 @@ public class Dependente {
         return Moradia_titular;
     }
 
-    public void setMoradia_titular(char Moradia_titular) {
+    public void setMoradia_titular(String Moradia_titular) {
         this.Moradia_titular = Moradia_titular;
     }
 

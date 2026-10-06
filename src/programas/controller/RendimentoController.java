@@ -44,7 +44,7 @@ public class RendimentoController {
         }
     }
 
-    
+
     private String formatarValor(String valor) {
         return (valor != null && !valor.isEmpty()) ? valor : "0,00";
     }
