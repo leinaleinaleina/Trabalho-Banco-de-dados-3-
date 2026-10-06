@@ -1,38 +1,62 @@
 package programas.controller;
 
 import programas.DAO.ImpostoPagoDAO;
-import programas.classes.casodeuso.Imposto_pago; // Importando a classe de domínio correta
+import programas.classes.casodeuso.Declaracao_renda;
+import programas.classes.casodeuso.Imposto_pago;
+
 import java.sql.Connection;
 import java.util.List;
 
 public class ImpostoPagoController {
 
-    private ImpostoPagoDAO dao;
+    private Connection conexao;
 
-    public ImpostoPagoController(Connection connection) {
-        this.dao = new ImpostoPagoDAO(connection);
+    public ImpostoPagoController(Connection conexao) {
+        this.conexao = conexao;
     }
 
-    public void consultarHistorico(String cpf) {
-        // O DAO fará a busca na base de dados e retornará a lista de objetos do domínio
-        List<Imposto_pago> pagamentos = dao.buscarHistorico(cpf);
+    public void exibirIRPFAnteriores(int idContribuinte) {
+        ImpostoPagoDAO dao = new ImpostoPagoDAO(conexao);
 
-        if (pagamentos == null || pagamentos.isEmpty()) {
-            System.out.println("Nenhum histórico de pagamento encontrado para o CPF: " + cpf);
-            return;
-        }
+        // Chama o DAO para buscar a lista de declarações vinculadas ao contribuinte
+        List<Declaracao_renda> declaracoes = dao.buscarIrpfAnterioresPorCpf(idContribuinte);
 
-        for (Imposto_pago pgto : pagamentos) {
-            // Utilizando exatamente os getters declarados na classe Imposto_pago.java
-            System.out.println("Imposto Retido Titular: " + (pgto.getImposto_retido_titular() != null ? pgto.getImposto_retido_titular() : "0.00"));
-            System.out.println("Imposto Retido Dependente: " + (pgto.getImposto_retido_dependente() != null ? pgto.getImposto_retido_dependente() : "0.00"));
-            System.out.println("Carnê Leão Titular: " + (pgto.getCarne_titular() != null ? pgto.getCarne_titular() : "0.00"));
-            System.out.println("Carnê Leão Dependente: " + (pgto.getCarne_dependente() != null ? pgto.getCarne_dependente() : "0.00"));
-            System.out.println("Imposto Complementar: " + (pgto.getImposto_complementar() != null ? pgto.getImposto_complementar() : "0.00"));
-            System.out.println("Imposto no Exterior: " + (pgto.getImposto_exterior() != null ? pgto.getImposto_exterior() : "0.00"));
-            System.out.println("Imposto Retido na Fonte: " + (pgto.getImposto_retido() != null ? pgto.getImposto_retido() : "0.00"));
-            System.out.println("Imposto RRA: " + (pgto.getImposto_RRA() != null ? pgto.getImposto_RRA() : "0.00"));
-            System.out.println("-----------------------------------");
+        System.out.println("\n=================================================");
+        System.out.println("               IRPF ANTERIORES                   ");
+        System.out.println("=================================================");
+
+        if (declaracoes != null && !declaracoes.isEmpty()) {
+            for (int i = 0; i < declaracoes.size(); i++) {
+                Declaracao_renda dec = declaracoes.get(i);
+                Imposto_pago ip = dec.getImposto_pago();
+
+                System.out.println("Declaração #" + dec.getIdDeclaração_renda());
+
+                // Atendendo ao requisito exato do seu colega
+                String valorDevido = dec.getImposto_devido() != null ? dec.getImposto_devido() : "0,00";
+                System.out.println("IRPF - Declarado no valor de R$ " + valorDevido);
+
+                if (ip != null) {
+                    System.out.println("\n--- Detalhes do Imposto Pago ---");
+                    // O método formatarValor evita que apareça a palavra "null" no terminal
+                    System.out.println("Imposto Retido Titular: R$ " + formatarValor(ip.getImposto_retido_titular()));
+                    System.out.println("Imposto Retido Dependente: R$ " + formatarValor(ip.getImposto_retido_dependente()));
+                    System.out.println("Carnê Leão Titular: R$ " + formatarValor(ip.getCarne_titular()));
+                    System.out.println("Carnê Leão Dependente: R$ " + formatarValor(ip.getCarne_dependente()));
+                    System.out.println("Imposto Complementar: R$ " + formatarValor(ip.getImposto_complementar()));
+                    System.out.println("Imposto no Exterior: R$ " + formatarValor(ip.getImposto_exterior()));
+                    System.out.println("Imposto Retido: R$ " + formatarValor(ip.getImposto_retido()));
+                    System.out.println("Imposto RRA: R$ " + formatarValor(ip.getImposto_RRA()));
+                }
+                System.out.println("-------------------------------------------------");
+            }
+        } else {
+            System.out.println("Nenhum registro de IRPF anterior encontrado para este contribuinte.");
         }
+    }
+
+
+    private String formatarValor(String valor) {
+        return (valor != null && !valor.isEmpty()) ? valor : "0,00";
     }
 }
