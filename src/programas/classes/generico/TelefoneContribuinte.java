@@ -9,6 +9,12 @@ public class TelefoneContribuinte {
     private int idTelefone;
     private Contribuinte contribuinte;
 
+       public TelefoneDependente () {
+        this.ddd = new DDD();
+        this.ddi = new DDI();
+    }
+
+
     public void setidTelefone (int idTelefone) {
         this.idTelefone = idTelefone;
     }
@@ -33,7 +39,6 @@ public class TelefoneContribuinte {
         return ddd;
     }
 
-    // Método adicionado para o DDI
     public void setDDI(DDI ddi) {
         this.ddi = ddi;
     }

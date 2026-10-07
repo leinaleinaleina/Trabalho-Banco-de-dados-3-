@@ -5,102 +5,98 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
+import programas.DAO.ConnectionFactory; 
 
 public class DeclaracaoController {
-
-    private Connection conexao;
-    private Scanner scanner;
-
-    public DeclaracaoController(Connection conexao) {
-        this.conexao = conexao;
-        this.scanner = new Scanner(System.in);
-    }
 
     public static void main(String[] args) {
 
         System.out.println("SISTEMA DE GESTÃO IRPF 2026");
 
-        int idContribuinteLogado = -1;
-        String cpfDigitado = "";
+   
+        try (Scanner scanner = new Scanner(System.in);
+             Connection conexao = ConnectionFactory.getConnection()) {
 
-        while (idContribuinteLogado == -1) {
-            System.out.print("Digite o CPF do Contribuinte: ");
-            cpfDigitado = scanner.nextLine().trim();
+            int idContribuinteLogado = -1;
+            String cpfDigitado = "";
 
+            while (idContribuinteLogado == -1) {
+                System.out.print("Digite o CPF do Contribuinte: ");
+                cpfDigitado = scanner.nextLine().trim();
 
-            if (cpfDigitado.isEmpty()) {
-                System.out.println("Erro: Você precisa digitar um CPF. Tente novamente.\n");
-                continue;
+                if (cpfDigitado.isEmpty()) {
+                    System.out.println("Erro: Você precisa digitar um CPF. Tente novamente.\n");
+                    continue;
+                }
+
+                // Agora passamos a conexão como parâmetro para o método estático
+                idContribuinteLogado = buscarIdPorCpf(cpfDigitado, conexao);
+
+                if (idContribuinteLogado == -1) {
+                    System.out.println("Erro: CPF não encontrado na base de dados.\n");
+                } else {
+                    System.out.println("CPF validado com sucesso! Acesso liberado.");
+                }
             }
 
-            idContribuinteLogado = buscarIdPorCpf(cpfDigitado);
+            int opcao = -1;
 
-            if (idContribuinteLogado == -1) {
-                System.out.println("Erro: CPF não encontrado na base de dados.\n");
-            } else {
-                System.out.println("CPF validado com sucesso! Acesso liberado.");
+            while (opcao != 0) {
+                System.out.println("\n--- MENU PRINCIPAL (CPF: " + cpfDigitado + ") ---");
+                System.out.println("1 - Consultar Dados do Contribuinte");
+                System.out.println("2 - Consultar IRPF Anteriores");
+                System.out.println("3 - Consultar Dependentes");
+                System.out.println("4 - Consultar Rendimentos Tributaveis PJ");
+                System.out.println("0 - Sair do Sistema");
+                System.out.print("Escolha uma opção: ");
+
+                try {
+                    opcao = Integer.parseInt(scanner.nextLine());
+                } catch (NumberFormatException e) {
+                    System.out.println("Entrada inválida. Por favor, digite um número.");
+                    continue;
+                }
+
+                System.out.println("\nProcessando...");
+
+                switch (opcao) {
+                    case 1:
+                        ContribuinteController contribuinteCtrl = new ContribuinteController(conexao);
+                        contribuinteCtrl.exibirDadosContribuinte(idContribuinteLogado);
+                        break;
+                    case 2:
+                        ImpostoPagoController impostoCtrl = new ImpostoPagoController(conexao);
+                        impostoCtrl.exibirIRPFAnteriores(idContribuinteLogado);
+                        break;
+                    case 3:
+                        DependenteController dependenteCtrl = new DependenteController(conexao);
+                        dependenteCtrl.exibirDependentes(idContribuinteLogado);
+                        break;
+                    case 4:
+                       RendimentoController rendimentoCtrl = new RendimentoController(conexao);
+                        rendimentoCtrl.exibirRendimentos(idContribuinteLogado);
+                        break;
+                    case 5:
+                        RelatorioController relatorioCtrl = new RelatorioController(conexao);
+                        relatorioCtrl.exibirRelatorioCompleto();
+                        break;
+                
+                    case 0:
+                        System.out.println("Encerrando o sistema");
+                        break;
+                    default:
+                        System.out.println("Opção inválida. Tente novamente.");
+                }
             }
-        }
 
-        int opcao = -1;
-
-
-        while (opcao != 0) {
-            System.out.println("\n--- MENU PRINCIPAL (CPF: " + cpfDigitado + ") ---");
-            System.out.println("1 - Consultar Dados do Contribuinte");
-            System.out.println("2 - Consultar IRPF Anteriores");
-            System.out.println("3 - Consultar Dependentes");
-            System.out.println("4 - Consultar Bens e Direitos");
-            System.out.println("5 - Consultar Rendimentos");
-            System.out.println("6 - Relatório Completo de Declarações (Geral)");
-            System.out.println("0 - Sair do Sistema");
-            System.out.print("Escolha uma opção: ");
-
-            try {
-                opcao = Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("Entrada inválida. Por favor, digite um número.");
-                continue;
-            }
-
-            System.out.println("\nProcessando...");
-
-            switch (opcao) {
-                case 1:
-                    ContribuinteController contribuinteCtrl = new ContribuinteController(conexao);
-                    contribuinteCtrl.exibirDadosContribuinte(idContribuinteLogado);
-                    break;
-                case 2:
-                    ImpostoPagoController impostoCtrl = new ImpostoPagoController(conexao);
-                    impostoCtrl.exibirIRPFAnteriores(idContribuinteLogado);
-                    break;
-                case 3:
-                    DependenteController dependenteCtrl = new DependenteController(conexao);
-                    dependenteCtrl.exibirDependentes(idContribuinteLogado);
-                    break;
-                case 4:
-                    BemDireitoController bemDireitoCtrl = new BemDireitoController(conexao);
-                    bemDireitoCtrl.exibirBensDireitos(idContribuinteLogado);
-                    break;
-                case 5:
-                    RendimentoController rendimentoCtrl = new RendimentoController(conexao);
-                    rendimentoCtrl.exibirRendimentos(idContribuinteLogado);
-                    break;
-                case 6:
-                    RelatorioController relatorioCtrl = new RelatorioController(conexao);
-                    relatorioCtrl.exibirRelatorioCompleto();
-                    break;
-                case 0:
-                    System.out.println("Encerrando o sistema");
-                    break;
-                default:
-                    System.out.println("Opção inválida. Tente novamente.");
-            }
+        } catch (SQLException e) {
+            // Tratamento de exceção exato que você solicitou
+            System.err.println("Falha ao recuperar os contatos: " + e.getMessage());
         }
     }
 
- 
-    private int buscarIdPorCpf(String cpf) {
+
+    private static int buscarIdPorCpf(String cpf, Connection conexao) {
         String sql = "SELECT idContribuinte FROM Contribuinte WHERE CPF = ?";
         try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setString(1, cpf);

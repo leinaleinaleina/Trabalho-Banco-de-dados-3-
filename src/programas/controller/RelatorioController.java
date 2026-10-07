@@ -1,10 +1,9 @@
 package programas.controller;
 
-import programas.DAO.RelatorioDAO;
-import programas.classes.casodeuso.Declaracao_renda;
-
 import java.sql.Connection;
 import java.util.List;
+import programas.DAO.RelatorioDAO;
+import programas.classes.casodeuso.Declaracao_renda;
 
 public class RelatorioController {
 
@@ -29,7 +28,7 @@ public class RelatorioController {
                 System.out.println("Registo #" + (i + 1));
                 System.out.println("ID Declaração: " + dec.getIdDeclaração_renda());
 
-                // Exibe o nome do contribuinte puxando pela Identificação
+
                 if (dec.getIdentificacao() != null && dec.getIdentificacao().getContribuinte() != null) {
                     System.out.println("Contribuinte: " + dec.getIdentificacao().getContribuinte().getNome());
                 }

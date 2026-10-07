@@ -34,9 +34,7 @@ public class DependenteController {
                 System.out.println("Reside com o Titular: " + formatarSimNao(dep.getMoradia_titular()));
                 System.out.println("Valor da Dedução: R$ " + formatarValor(dep.getDeducao()));
 
-                listarContatosDependente(idContribuinte);
-
-
+                listarContatosDependente(dep.getIdDependente());
             }
         } else {
             System.out.println("Nenhum dependente cadastrado para este contribuinte.");
@@ -60,38 +58,35 @@ public class DependenteController {
         return (texto != null && !texto.isEmpty()) ? texto : "Não informado";
     }
 
-     public void listarContatosDependente(int idDependente) {
-            DependenteDAO dao = new DependenteDAO(conexao); 
+    public void listarContatosDependente(int idDependente) {
+        DependenteDAO dao = new DependenteDAO(conexao); 
+        
+        try {
+            List<TelefoneDependente> telefones = dao.buscarTelefones(idDependente);
+            List<EmailDependente> emails = dao.buscarEmails(idDependente);
             
-            try {
-
-                List<TelefoneDependente> telefones = dao.buscarTelefones(idDependente);
-                List<EmailDependente> emails = dao.buscarEmails(idDependente);
-                
-                System.out.println("\n--- Contatos do Dependente ID: " + idDependente + " ---");
-                
-                System.out.println("Telefones encontrados:");
-                if (telefones.isEmpty()) {
-                    System.out.println("Nenhum telefone registrado.");
-                } else {
-                    for (TelefoneDependente tel : telefones) {
-
-                        System.out.println("- [" + tel.getDDI().getidDDI() + " " + tel.getDDD().getidDDD() + "] " + tel.getTelefone());
-                    }
+            System.out.println("\n--- Contatos do Dependente ID: " + idDependente + " ---");
+            
+            System.out.println("Telefones encontrados:");
+            if (telefones.isEmpty()) {
+                System.out.println("Nenhum telefone registrado.");
+            } else {
+                for (TelefoneDependente tel : telefones) {
+                    System.out.println("- [" + tel.getDDI().getidDDI() + " " + tel.getDDD().getidDDD() + "] " + tel.getTelefone());
                 }
-                
-                System.out.println("\nE-mails encontrados:");
-                if (emails.isEmpty()) {
-                    System.out.println("Nenhum e-mail registrado.");
-                } else {
-                    for (EmailDependente email : emails) {
-
-                        System.out.println("- " + email.getEmail());
-                    }
-                }
-                
-            } catch (Exception e) {
-                System.err.println("Falha ao recuperar os contatos: " + e.getMessage());
             }
+            
+            System.out.println("\nE-mails encontrados:");
+            if (emails.isEmpty()) {
+                System.out.println("Nenhum e-mail registrado.");
+            } else {
+                for (EmailDependente email : emails) {
+                    System.out.println("- " + email.getEmail());
+                }
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Falha ao recuperar os contatos: " + e.getMessage());
         }
+    }
 }

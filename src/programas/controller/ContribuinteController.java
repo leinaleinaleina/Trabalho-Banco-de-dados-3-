@@ -57,6 +57,9 @@ public class ContribuinteController {
                                     System.out.println("UF: " + c.getEndereco().getCidade().getUF().getUF());
                                 }
                             }
+
+                            listarContatosContribuinte(idContribuinte);
+                            
                         } else {
                             System.out.println("Endereço: Não carregado ou inexistente.");
 
@@ -75,7 +78,6 @@ public class ContribuinteController {
 
         String strValor = valor.toString().toUpperCase();
 
-        // Se no seu banco a marcação de 'Sim' for 1, 'S', 'C' ou 'T'
         if (strValor.equals("1") || strValor.equals("S") || strValor.equals("TRUE") || strValor.equals("C")) {
             return "Sim";
         }
@@ -86,7 +88,6 @@ public class ContribuinteController {
         ContribuinteDAO dao= new ContribuinteDAO(conexao);  
         
         try {
-            // Recebe as listas geradas pelo DAO
             List<TelefoneContribuinte> telefones = dao.buscarTelefones(idContribuinte);
             List<EmailContribuinte> emails = dao.buscarEmails(idContribuinte);
             

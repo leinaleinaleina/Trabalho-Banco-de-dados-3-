@@ -8,6 +8,11 @@ public class TelefoneDependente {
     private int idTelefone;
     private Dependente dependente;
 
+    public TelefoneDependente () {
+        this.ddd = new DDD();
+        this.ddi = new DDI();
+    }
+
     public void setidTelefone (int idTelefone) {
         this.idTelefone = idTelefone;
     }

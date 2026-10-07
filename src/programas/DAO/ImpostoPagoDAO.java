@@ -1,15 +1,14 @@
 package programas.DAO;
 
-import programas.classes.casodeuso.Declaracao_renda;
-import programas.classes.casodeuso.Imposto_devido;
-import programas.classes.casodeuso.Imposto_pago;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import programas.classes.casodeuso.Declaracao_renda;
+import programas.classes.casodeuso.Imposto_devido;
+import programas.classes.casodeuso.Imposto_pago;
 
 public class ImpostoPagoDAO {
     private Connection conexao;
@@ -21,18 +20,13 @@ public class ImpostoPagoDAO {
     public List<Declaracao_renda> buscarIrpfAnterioresPorCpf(int cpfContribuinte) {
         List<Declaracao_renda> declaracoes = new ArrayList<>();
 
-        // Consulta através da Declaracao_Renda para buscar os impostos pagos e devidos do Contribuinte
-        String sql = "SELECT dr.idDeclaracao_Renda, " +
-                "idev.idImposto_devido, idev.Imposto_devido, " +
-                "ip.idImposto_pago, ip.Imposto_retido_titular, ip.Imposto_retido_dependente, " +
-                "ip.Carne_titular, ip.Carne_dependente, ip.Imposto_complementar, " +
-                "ip.Imposto_no_exterior, ip.Imposto_retido, ip.Imposto_RRA " +
-                "FROM Declaracao_Renda dr " +
-                "INNER JOIN Imposto imp ON dr.Imposto_idimposto = imp.idimposto " +
-                "INNER JOIN Imposto_devido idev ON imp.Imposto_devido_idImposto_devido = idev.idImposto_devido " +
-                "INNER JOIN Imposto_pago ip ON imp.Imposto_pago_idImposto_pago = ip.idImposto_pago " +
-                "WHERE dr.Identificacao_Contribuinte_idContribuinte = ?";
-
+         String sql = "SELECT ip.idImposto_pago, ip.Imposto_retido_titular, ip.Imposto_retido_dependente, " +
+                     "ip.Carne_titular, ip.Carne_dependente, ip.Imposto_complementar, " +
+                     "ip.Imposto_no_exterior, ip.Imposto_retido, ip.Imposto_RRA " +
+                     "FROM Imposto_pago ip " +
+                     "INNER JOIN Declaracao_Renda_Contribuinte dr ON ip.Declaracao_Renda_Contribuinte_idDeclaracao_Renda = dr.idDeclaracao_Renda " +
+                     "INNER JOIN IdentificacaoContribuinte ic ON dr.Identificacao_idIdentificacao = ic.idIdentificacao " +
+                     "WHERE ic.Contribuinte_idContribuinte = ?";
         try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setInt(1, cpfContribuinte);
             ResultSet rs = stmt.executeQuery();
